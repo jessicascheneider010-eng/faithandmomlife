@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Faith & Mom Life</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Jost', sans-serif; background: #faf6f0; color: #3d2b1a; min-height: 100vh; }
+  #loginScreen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+  .login-box { background: #fff; border: 1px solid #d9c9b4; border-radius: 12px; padding: 48px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 4px 30px rgba(61,43,26,0.08); }
+  .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.6em; font-style: italic; color: #3d2b1a; margin-bottom: 4px; }
+  .login-title { font-size: 0.72em; letter-spacing: 0.2em; text-transform: uppercase; color: #c4826a; margin-bottom: 32px; }
+  input[type=password] { width: 100%; padding: 14px 18px; border: 1.5px solid #d9c9b4; border-radius: 6px; background: #faf6f0; font-family: 'Jost', sans-serif; font-size: 0.9em; color: #3d2b1a; outline: none; margin-bottom: 12px; text-align: center; }
+  input[type=email], input[type=text] { width: 100%; padding: 14px 18px; border: 1.5px solid #d9c9b4; border-radius: 6px; background: #faf6f0; font-family: 'Jost', sans-serif; font-size: 0.88em; color: #3d2b1a; outline: none; }
+  input:focus { border-color: #c4826a; }
+  .error-msg { color: #c62828; font-size: 0.8em; margin-bottom: 10px; display: none; }
+  .btn { padding: 14px 24px; background: #3d2b1a; color: #faf6f0; border: none; border-radius: 6px; font-family: 'Jost', sans-serif; font-size: 0.82em; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .btn:hover { background: #c4826a; }
+  .btn-full { width: 100%; }
+  .btn-sm { padding: 8px 16px; font-size: 0.72em; }
+  .btn-rose { background: #c4826a; }
+  #dashboard { display: none; padding: 32px; max-width: 1000px; margin: 0 auto; }
+  .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+  .dash-brand { font-family: 'Cormorant Garamond', serif; font-size: 1.8em; font-style: italic; }
+  .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-card { background: #fff; border: 1px solid #d9c9b4; border-radius: 10px; padding: 20px; text-align: center; }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.4em; font-weight: 600; color: #c4826a; line-height: 1; margin-bottom: 4px; }
+  .stat-label { font-size: 0.68em; letter-spacing: 0.15em; text-transform: uppercase; color: #a08060; }
+  .card { background: #fff; border: 1px solid #d9c9b4; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+  .card-header { padding: 18px 24px; border-bottom: 1px solid #f0e8dc; display: flex; justify-content: space-between; align-items: center; }
+  .card-title { font-size: 0.72em; letter-spacing: 0.2em; text-transform: uppercase; color: #c4826a; font-weight: 500; }
+  .test-row { padding: 20px 24px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 0.68em; letter-spacing: 0.12em; text-transform: uppercase; color: #a08060; padding: 12px 20px; text-align: left; background: #faf6f0; border-bottom: 1px solid #f0e8dc; }
+  td { font-size: 0.82em; padding: 13px 20px; border-bottom: 1px solid #f5ede6; color: #3d2b1a; }
+  tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.68em; font-weight: 500; }
+  .badge-green { background: #e8f5e9; color: #2e7d32; }
+  .badge-gray { background: #f5f5f5; color: #757575; }
+  .empty { padding: 40px; text-align: center; color: #a08060; font-style: italic; font-size: 0.9em; }
+  .flash { padding: 12px 20px; border-radius: 6px; font-size: 0.82em; margin-bottom: 16px; display: none; }
+  .flash-ok { background: #e8f5e9; color: #2e7d32; }
+  .flash-err { background: #fdecea; color: #c62828; }
+  @media(max-width:600px){ .stats{grid-template-columns:repeat(2,1fr);} #dashboard{padding:16px;} }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="brand">Faith & Mom Life</div>
+    <div class="login-title">Admin Dashboard</div>
+    <div class="error-msg" id="loginErr">Wrong password. Try again.</div>
+    <input type="password" id="pwdInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <br><br>
+    <button class="btn btn-full" onclick="doLogin()">Enter Dashboard</button>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="dash-header">
+    <div class="dash-brand">Faith & Mom Life</div>
+    <div class="btn-group">
+      <button class="btn btn-sm btn-rose" onclick="processSeq()">▶ Send Follow-up Emails</button>
+      <button class="btn btn-sm" onclick="loadSubs()">↻ Refresh</button>
+      <button class="btn btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div id="flash" class="flash"></div>
+
+  <!-- TEST EMAILS -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header"><span class="card-title">Test Emails — Send to your inbox</span></div>
+    <div class="test-row">
+      <input type="email" id="testEmail" placeholder="your@email.com" style="min-width:200px;max-width:260px;">
+      <button class="btn btn-sm" onclick="testEmail('welcome')">📩 Email 1 — PDF</button>
+      <button class="btn btn-sm" onclick="testEmail('nurture')">💛 Email 2 — Day 3</button>
+      <button class="btn btn-sm btn-rose" onclick="testEmail('offer1')">📖 Email 3 — Bible Cards</button>
+      <button class="btn btn-sm btn-rose" onclick="testEmail('offer2')">✝️ Email 4 — Devotional</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card"><div class="stat-num" id="sTotal">0</div><div class="stat-label">Subscribers</div></div>
+    <div class="stat-card"><div class="stat-num" id="sDay3">0</div><div class="stat-label">Day 3 Sent</div></div>
+    <div class="stat-card"><div class="stat-num" id="sDay6">0</div><div class="stat-label">Bible Cards</div></div>
+    <div class="stat-card"><div class="stat-num" id="sDay9">0</div><div class="stat-label">Devotional</div></div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">All Subscribers</span>
+      <button class="btn btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+    <div id="tableArea"><div class="empty">Loading...</div></div>
+  </div>
+</div>
+
+<script>
+const CORRECT_PWD = 'jessica2024';
+let userPwd = '';
+let subs = [];
+
+function doLogin() {
+  const val = document.getElementById('pwdInput').value.trim();
+  if (val === CORRECT_PWD) {
+    userPwd = val;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadSubs();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('pwdInput').value = '';
+    document.getElementById('pwdInput').focus();
+  }
+}
+
+function doLogout() {
+  userPwd = '';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('pwdInput').value = '';
+}
+
+async function loadSubs() {
+  try {
+    const r = await fetch('/api/subscribe?pwd=' + encodeURIComponent(userPwd));
+    const d = await r.json();
+    subs = d.subscribers || [];
+    renderStats();
+    renderTable();
+  } catch(e) {
+    subs = [];
+    renderStats();
+    renderTable();
+  }
+}
+
+function renderStats() {
+  document.getElementById('sTotal').textContent = subs.length;
+  document.getElementById('sDay3').textContent = subs.filter(s=>s.day3sent).length;
+  document.getElementById('sDay6').textContent = subs.filter(s=>s.day6sent).length;
+  document.getElementById('sDay9').textContent = subs.filter(s=>s.day9sent).length;
+}
+
+function renderTable() {
+  const el = document.getElementById('tableArea');
+  if (!subs.length) {
+    el.innerHTML = '<div class="empty">No subscribers yet — share your link on Pinterest! 🙏</div>';
+    return;
+  }
+  const rows = [...subs].sort((a,b) => b.subscribedAt - a.subscribedAt).map(s => `
+    <tr>
+      <td><strong>${s.email}</strong></td>
+      <td>${new Date(s.subscribedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+      <td>${s.day3sent?'<span class="badge badge-green">✓ Sent</span>':'<span class="badge badge-gray">Pending</span>'}</td>
+      <td>${s.day6sent?'<span class="badge badge-green">✓ Sent</span>':'<span class="badge badge-gray">Pending</span>'}</td>
+      <td>${s.day9sent?'<span class="badge badge-green">✓ Sent</span>':'<span class="badge badge-gray">Pending</span>'}</td>
+    </tr>`).join('');
+  el.innerHTML = `<table><thead><tr><th>Email</th><th>Subscribed</th><th>Day 3</th><th>Day 6 Bible Cards</th><th>Day 9 Devotional</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function testEmail(type) {
+  const email = document.getElementById('testEmail').value.trim();
+  if (!email || !email.includes('@')) { flash('Enter a valid email in the test field first.', false); return; }
+  flash('Sending ' + type + ' email...', true);
+  try {
+    const r = await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'test_email', type, email, pwd: userPwd })
+    });
+    const d = await r.json();
+    if (d.success) flash('✓ Email sent! Check your inbox.', true);
+    else flash('Error: ' + (d.error||'unknown'), false);
+  } catch(e) { flash('Error: ' + e.message, false); }
+}
+
+async function processSeq() {
+  flash('Processing follow-up emails...', true);
+  try {
+    const r = await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action: 'process_sequences', pwd: userPwd })
+    });
+    const d = await r.json();
+    if (d.success) { flash('✓ Done! ' + d.processed + ' emails sent.', true); loadSubs(); }
+    else flash('Error: ' + (d.error||'unknown'), false);
+  } catch(e) { flash('Error: ' + e.message, false); }
+}
+
+function exportCSV() {
+  if (!subs.length) return;
+  const rows = [['Email','Subscribed','Day3','Day6','Day9']];
+  subs.forEach(s => rows.push([s.email, new Date(s.subscribedAt).toLocaleDateString(), s.day3sent, s.day6sent, s.day9sent]));
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv,' + encodeURIComponent(csv);
+  a.download = 'subscribers.csv';
+  a.click();
+}
+
+function flash(msg, ok) {
+  const el = document.getElementById('flash');
+  el.textContent = msg;
+  el.className = 'flash ' + (ok ? 'flash-ok' : 'flash-err');
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+</script>
+</body>
+</html>
