@@ -1,6 +1,15 @@
 {
-  "rewrites": [
-    { "source": "/api/subscribe", "destination": "/api/subscribe" },
-    { "source": "/(.*)", "destination": "/public/$1" }
+  "functions": {
+    "api/subscribe.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  },
+  "routes": [
+    { "src": "/api/subscribe", "dest": "/api/subscribe.js" },
+    { "src": "/prayer-planner.pdf", "dest": "/public/prayer-planner.pdf" },
+    { "src": "/jessica.jpg", "dest": "/public/jessica.jpg" },
+    { "src": "/admin.html", "dest": "/public/admin.html" },
+    { "src": "/(.*)", "dest": "/public/index.html" }
   ]
 }
