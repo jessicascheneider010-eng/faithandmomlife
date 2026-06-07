@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HN7R9KVFGY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-HN7R9KVFGY');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Free 7-Day Prayer Planner for Moms — Faith & Mom Life</title>
@@ -251,7 +259,7 @@
         </ul>
         <div class="product-footer">
           <div class="product-price">$5</div>
-          <a href="https://faithandmomlife.gumroad.com/l/goodnightbiblecards" class="product-btn" target="_blank">Get Instant Access ✦</a>
+          <a href="https://faithandmomlife.gumroad.com/l/goodnightbiblecards" class="product-btn" target="_blank" onclick="if(typeof gtag==='function'){gtag('event','select_content',{content_type:'product',item_id:'good-night-bible-cards'});}">Get Instant Access ✦</a>
         </div>
       </div>
     </div>
@@ -274,7 +282,7 @@
         </ul>
         <div class="product-footer">
           <div class="product-price">$7</div>
-          <a href="https://faithandmomlife.gumroad.com/l/aiawv" class="product-btn" target="_blank">Get Instant Access ✦</a>
+          <a href="https://faithandmomlife.gumroad.com/l/aiawv" class="product-btn" target="_blank" onclick="if(typeof gtag==='function'){gtag('event','select_content',{content_type:'product',item_id:'gospel-devotional'});}">Get Instant Access ✦</a>
         </div>
       </div>
     </div>
@@ -332,6 +340,9 @@ async function subscribe(inputId, msgId, btn) {
       msgEl.textContent = '🙏 Check your inbox! Your prayer planner is on its way.';
       document.getElementById(inputId).value = '';
       btn.textContent = 'Sent! Check Your Email ✦';
+      if (typeof gtag === 'function') {
+        gtag('event', 'generate_lead', { method: 'prayer_planner', form_location: inputId });
+      }
     } else {
       throw new Error(data.error || 'Something went wrong.');
     }
@@ -345,4 +356,3 @@ async function subscribe(inputId, msgId, btn) {
 </script>
 </body>
 </html>
-<!-- v3 Mon Jun  1 18:56:02 UTC 2026 -->
