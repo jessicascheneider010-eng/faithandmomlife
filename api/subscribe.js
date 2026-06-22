@@ -29,6 +29,33 @@ function sendRequest(data) {
   });
 }
 
+function addContact(email) {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify({ email: email, unsubscribed: false });
+    const options = {
+      hostname: 'api.resend.com',
+      path: '/contacts',
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + RESEND_API_KEY,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data)
+      }
+    };
+    const req = https.request(options, (res) => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) resolve(JSON.parse(body));
+        else reject(new Error(res.statusCode + ': ' + body));
+      });
+    });
+    req.on('error', reject);
+    req.write(data);
+    req.end();
+  });
+}
+
 function emailWelcome(email) {
   return JSON.stringify({
     from: 'Jessica — Faith & Mom Life <jessica@faithandmomlife.com>',
@@ -78,6 +105,13 @@ module.exports = async (req, res) => {
   if (!email || !email.includes('@')) return res.status(400).json({ error: 'Please enter a valid email address.' });
   const cleanEmail = email.trim().toLowerCase();
   try {
+    // Save the lead to the contact list first (non-fatal: never block delivery)
+    try {
+      await addContact(cleanEmail);
+    } catch (contactErr) {
+      console.error('Contact save failed (non-fatal):', contactErr.message);
+    }
+
     await sendRequest(emailWelcome(cleanEmail));
     await sendRequest(emailDay3(cleanEmail));
     await sendRequest(emailDay5(cleanEmail));
